@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>냉장고 레시피 매니저 - 자취생 냉장고 재료 기반 레시피 추천</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="냉장고 속 재료를 등록하고 유통기한을 편리하게 관리하세요. 보유한 재료를 바탕으로 지금 당장 만들 수 있는 맛있는 자취 요리 레시피를 추천해 드립니다.">
+  <meta name="keywords" content="냉장고 레시피, 자취 요리, 냉파, 냉장고 파먹기, 식재료 관리, 유통기한 관리, 장보기 목록">
+  
+  <!-- FontAwesome for Premium Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Outfit & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-theme">
+  
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Top Navigation Header -->
+    <header class="main-header">
+      <div class="header-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-kitchen-set"></i>
+        </div>
+        <div class="logo-text">
+          <h1>냉장고 레시피 매니저</h1>
+        </div>
+      </div>
+      
+      <!-- Statistics Dashboard -->
+      <div class="header-dashboard">
+        <div class="stat-card" id="stat-total-ingredients">
+          <span class="stat-label">보유 재료</span>
+          <span class="stat-value">0</span>
+        </div>
+        <div class="stat-card urgent" id="stat-urgent-ingredients">
+          <span class="stat-label">유통기한 임박/지남</span>
+          <span class="stat-value">0</span>
+        </div>
+        <div class="stat-card success" id="stat-available-recipes">
+          <span class="stat-label">추천 레시피</span>
+          <span class="stat-value">0</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="header-controls">
+        <button id="theme-toggle-btn" class="icon-btn" aria-label="테마 전환">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Grid Layout -->
+    <main class="main-layout">
+      
+      <!-- Left Column: Fridge & Recipe Manager -->
+      <section class="left-column">
+        
+        <!-- Fridge Section -->
+        <article class="fridge-section card-container">
+          <div class="section-header">
+            <h2><i class="fa-solid fa-cube text-primary"></i> 나의 냉장고</h2>
+            <button id="add-ingredient-btn" class="btn btn-primary">
+              <i class="fa-solid fa-plus"></i> 재료 추가
+            </button>
+          </div>
+
+          <!-- Category Filter Tabs -->
+          <div class="category-tabs-container">
+            <div class="category-tabs" role="tablist">
+              <button class="tab-btn active" data-category="all" role="tab" aria-selected="true">
+                <i class="fa-solid fa-border-all"></i> 전체
+              </button>
+              <button class="tab-btn" data-category="채소" role="tab" aria-selected="false">
+                🥦 채소
+              </button>
+              <button class="tab-btn" data-category="고기" role="tab" aria-selected="false">
+                🥩 고기
+              </button>
+              <button class="tab-btn" data-category="해산물" role="tab" aria-selected="false">
+                🐟 해산물
+              </button>
+              <button class="tab-btn" data-category="유제품" role="tab" aria-selected="false">
+                🥛 유제품
+              </button>
+              <button class="tab-btn" data-category="곡류" role="tab" aria-selected="false">
+                🌾 곡류
+              </button>
+              <button class="tab-btn" data-category="소스" role="tab" aria-selected="false">
+                🍯 소스
+              </button>
+              <button class="tab-btn" data-category="기타" role="tab" aria-selected="false">
+                🥫 기타
+              </button>
+            </div>
+          </div>
+
+          <!-- Ingredients List Grid -->
+          <div id="ingredients-grid" class="ingredients-grid">
+            <!-- Dynamic Ingredients Cards go here -->
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fa-solid fa-carrot"></i></div>
+              <p>등록된 재료가 없습니다.</p>
+              <span>냉장고에 있는 재료를 추가하여 보관 상태를 확인해보세요!</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Recommended Recipes Section -->
+        <article class="recipes-section card-container">
+          <div class="section-header">
+            <h2>
+              <i class="fa-solid fa-utensils text-primary"></i> 
+              보유 재료 기반 추천 레시피 
+              <span class="subtitle">지금 만들 수 있는 요리 순으로 정렬됩니다</span>
+            </h2>
+          </div>
+
+          <!-- Recipes Grid -->
+          <div id="recipes-grid" class="recipes-grid">
+            <!-- Dynamic Recipe Cards go here -->
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fa-solid fa-burger"></i></div>
+              <p>추천할 수 있는 레시피가 없습니다.</p>
+              <span>냉장고에 재료를 등록하시면 레시피가 자동으로 추천됩니다.</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Right Column: Sidebar (Shopping List & Tips) -->
+      <aside class="right-column">
+        
+        <!-- Shopping List Section -->
+        <article class="shopping-section card-container">
+          <div class="section-header">
+            <h2><i class="fa-solid fa-cart-shopping text-secondary"></i> 장보기 목록</h2>
+            <button id="clear-completed-btn" class="btn-text" title="구매 완료된 항목을 목록에서 지웁니다.">
+              완료 삭제
+            </button>
+          </div>
+
+          <!-- Shopping Add Item Form -->
+          <form id="shopping-form" class="shopping-form">
+            <input type="text" id="shopping-input" placeholder="필요한 식재료 입력..." required autocomplete="off">
+            <button type="submit" class="btn btn-secondary" aria-label="추가">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </form>
+
+          <!-- Shopping List Checklist -->
+          <ul id="shopping-list" class="shopping-list">
+            <!-- Dynamic Shopping List Items go here -->
+            <li class="shopping-empty">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <p>장보기 목록이 비어있습니다.</p>
+            </li>
+          </ul>
+        </article>
+
+        <!-- Tip Box (Aesthetic decoration) -->
+        <article class="tip-box card-container">
+          <div class="tip-title">
+            <i class="fa-solid fa-lightbulb text-warning"></i>
+            <h3>자취생 냉장고 꿀팁</h3>
+          </div>
+          <p class="tip-content">
+            남은 대파는 깨끗이 씻어 송송 썬 다음 지퍼백에 넣어 <strong>냉동 보관</strong>하면 오래 먹을 수 있어요. 국이나 찌개, 볶음밥에 바로 사용할 수 있어 자취생 필수 스킬이랍니다!
+          </p>
+        </article>
+      </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 냉장고 레시피 매니저. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1. Add/Edit Ingredient Modal -->
+  <div id="ingredient-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">재료 추가</h3>
+        <button class="close-modal-btn" aria-label="닫기"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="ingredient-form" novalidate>
+        <!-- Hidden input for ID (Edit Mode) -->
+        <input type="hidden" id="ingredient-id">
+        
+        <div class="form-group">
+          <label for="ingredient-name">재료명 <span class="required">*</span></label>
+          <input type="text" id="ingredient-name" placeholder="예: 양파, 달걀, 돼지고기" required autocomplete="off">
+          <span class="error-msg" id="name-error">재료명을 입력해주세요.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="ingredient-category">카테고리</label>
+            <select id="ingredient-category">
+              <option value="기타">🥫 기타</option>
+              <option value="채소">🥦 채소</option>
+              <option value="고기">🥩 고기</option>
+              <option value="해산물">🐟 해산물</option>
+              <option value="유제품">🥛 유제품</option>
+              <option value="곡류">🌾 곡류</option>
+              <option value="소스">🍯 소스</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="ingredient-quantity">수량</label>
+            <input type="number" id="ingredient-quantity" min="1" value="1">
+          </div>
+          <div class="form-group flex-1">
+            <label for="ingredient-unit">단위</label>
+            <select id="ingredient-unit">
+              <option value="개">개</option>
+              <option value="g">g</option>
+              <option value="ml">ml</option>
+              <option value="봉지">봉지</option>
+              <option value="팩">팩</option>
+              <option value="통">통</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ingredient-expiry">유통기한</label>
+          <div class="expiry-input-wrapper">
+            <input type="date" id="ingredient-expiry">
+            <div class="checkbox-container">
+              <input type="checkbox" id="ingredient-expiry-unknown">
+              <label for="ingredient-expiry-unknown">모름</label>
+            </div>
+          </div>
+          <span class="error-msg" id="expiry-error">이미 지난 날짜입니다.</span>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline cancel-modal-btn">취소</button>
+          <button type="submit" class="btn btn-primary" id="save-ingredient-btn">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Recipe Detail Modal -->
+  <div id="recipe-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="recipe-modal-title">
+    <div class="modal-card recipe-detail-card">
+      <div class="modal-header">
+        <h3 id="recipe-modal-title">레시피 상세 보기</h3>
+        <button class="close-modal-btn" aria-label="닫기"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="recipe-modal-content">
+        <!-- Recipe Title and Stats Banner -->
+        <div class="recipe-banner">
+          <div class="recipe-badge-row">
+            <span class="recipe-detail-badge" id="recipe-difficulty"><i class="fa-solid fa-star"></i> 보통</span>
+            <span class="recipe-detail-badge" id="recipe-time"><i class="fa-solid fa-clock"></i> 15분</span>
+          </div>
+          <h2 id="recipe-detail-name">레시피 이름</h2>
+          <p id="recipe-detail-desc" class="recipe-desc">레시피 설명이 여기에 들어갑니다.</p>
+        </div>
+
+        <!-- Ingredients Checklist Grid -->
+        <section class="recipe-section-block">
+          <h4 class="section-title"><i class="fa-solid fa-basket-shopping"></i> 재료 체크리스트</h4>
+          <p class="section-desc">초록색 체크는 가진 재료, 플러스 버튼은 없는 재료(장보기 목록에 추가)입니다.</p>
+          <ul id="recipe-ingredients-checklist" class="recipe-ingredients-checklist">
+            <!-- Dynamic list of ingredients -->
+          </ul>
+        </section>
+
+        <!-- Cooking Steps -->
+        <section class="recipe-section-block">
+          <h4 class="section-title"><i class="fa-solid fa-list-check"></i> 조리 방법</h4>
+          <ol id="recipe-steps-list" class="recipe-steps-list">
+            <!-- Dynamic ordered list of cooking steps -->
+          </ol>
+        </section>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline close-modal-btn">닫기</button>
+        <button type="button" class="btn btn-success" id="cook-complete-btn">
+          <i class="fa-solid fa-kitchen-set"></i> 요리 완료 (재료 차감)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Main Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
